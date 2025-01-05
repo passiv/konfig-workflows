@@ -1,0 +1,184 @@
+name: Regenerate SDKs
+
+on:
+  workflow_call:
+    inputs:
+      konfig_yaml_dir:
+        description: "Path to directory which contains konfig.yaml"
+        type: string
+        required: true
+        default: "."
+
+jobs:
+  # Fixes and lints OAS. If linter passes, regenerates SDKs, creates changeset, and pushes
+  regenerate-sdks:
+    runs-on: ubuntu-latest
+    outputs:
+      sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          submodules: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install konfig
+        uses: ./.github/actions/install-cliinstall-cli
+
+      - name: Fix OAS
+        run: konfig fix --ci
+        working-directory: ${{ inputs.konfig_yaml_dir }}
+
+      - name: Check if linting is disabled
+        id: check-linter-disabled
+        uses: mikefarah/yq@v4.35.2
+        with:
+          cmd: yq '.disableAutomationLinter' ${{ inputs.konfig_yaml_dir }}/konfig.yaml
+
+      - name: Lint OAS
+        # This exits with code 1 if linting fails, thus terminating the workflow if the OAS does not pass linting
+        if: steps.check-linter-disabled.outputs.result != 'true'
+        run: konfig lint
+        working-directory: ${{ inputs.konfig_yaml_dir }}
+
+      - name: Regenerate SDKs
+        run: konfig generate
+        working-directory: ${{ inputs.konfig_yaml_dir }}
+
+      - name: Create changeset file
+        run: konfig changeset -a -m "Regenerate SDKs"
+        working-directory: ${{ inputs.konfig_yaml_dir }}
+
+      - name: Set git config
+        run: |
+          git config --global user.email "passiv-ops@passiv.com"
+          git config --global user.name "Passiv Ops"
+
+      - name: Detect SDK submodules
+        id: sdk-submodules
+        uses: ./.github/actions/private/detect-sdk-submodules
+        with:
+          konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
+
+      - name: Push SDK submodules to PR
+        if: steps.sdk-submodules.outputs.dirs != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/private/push-submodules-to-pr
+        with:
+          konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
+          sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
+          submodule_deploy_keys: |
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_PYTHON }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_TYPESCRIPT }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_JAVA }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_CSHARP }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_GO }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_PHP }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_PHP7 }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_RUBY }}
+            ${{ secrets.SUBMODULE_DEPLOY_KEY_SWIFT }}
+          head: ${{ github.head_ref }}
+          commit_msg: "Regenerate SDKs"
+          pr_title: "Regenerate SDKs"
+          pr_body: "Automatically created by top-level SDK repo PR: ${{ github.event.pull_request.html_url }}"
+
+      - name: Commit and push (top-level repo)
+        run: |
+          git add -A
+          git commit -m "Regenerate SDKs"
+          git push origin HEAD:${{ github.head_ref }}
+
+  # Runs konfig test in docker container
+  test:
+    runs-on: ubuntu-latest
+    needs: regenerate-sdks
+    container:
+      image: konfigdev/test-and-publish:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          submodules: true
+
+      - name: Install konfig
+        uses: ./.github/actions/install-cli
+
+      - name: Setup test env vars
+        uses: ./.github/actions/private/inject-testing-env-vars
+        with:
+          TEST_ENV: ${{ secrets.TEST_ENV }}
+
+      - name: Run tests
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_on: error
+          command: cd ${{ inputs.konfig_yaml_dir }} && konfig test
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # If tests pass, merge the PR.
+  # If applicable, this will first merge the PRs in the SDK submodules
+  merge:
+    runs-on: ubuntu-latest
+    needs: [test, regenerate-sdks]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          submodules: true
+
+      - name: Install konfig
+        uses: ./.github/actions/install-cli
+
+      - name: Set git config
+        run: |
+          git config --global user.email "publisher@konfigthis.com"
+          git config --global user.name "konfig-publisher"
+
+      - name: Merge submodule PRs
+        if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
+        uses: ./.github/actions/private/merge-submodule-prs
+        with:
+          konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
+          sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}
+          head: ${{ github.head_ref }}
+          base: ${{ github.base_ref }}
+
+      - name: Update submodule references
+        if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
+        uses: ./.github/actions/private/sync-submodules
+        with:
+          konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
+          sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}
+          push_to: ${{ github.head_ref }}
+
+      - name: Merge top-level PR
+        env:
+          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
+          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
+        run: |
+          repo=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
+          konfig pr-merge \
+            --head ${{ github.head_ref }} \
+            --base ${{ github.base_ref }} \
+            --owner ${{ github.repository_owner }} \
+            --repo $repo

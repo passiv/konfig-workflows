@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  workflow_call:
+    secrets:
+      TEST_ENV:
+        required: false
+      SUBMODULE_DEPLOY_KEY_TYPESCRIPT:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PYTHON:
+        required: false
+      SUBMODULE_DEPLOY_KEY_JAVA:
+        required: false
+      SUBMODULE_DEPLOY_KEY_CSHARP:
+        required: false
+      SUBMODULE_DEPLOY_KEY_GO:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PHP:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PHP7:
+        required: false
+      SUBMODULE_DEPLOY_KEY_RUBY:
+        required: false
+      SUBMODULE_DEPLOY_KEY_SWIFT:
+        required: false
+      NPM_TOKEN:
+        required: false
+      PYPI_TOKEN_1:
+        required: false
+      PYPI_TOKEN_2:
+        required: false
+      GPG_PASSPHRASE:
+        required: false
+      GPG_PRIVATE_KEY:
+        required: false
+      GPG_KEY_ID:
+        required: false
+      OSSRH_USERNAME:
+        required: false
+      OSSRH_PASSWORD:
+        required: false
+      NUGET_API_KEY:
+        required: false
+      PACKAGIST_API_TOKEN:
+        required: false
+      GEM_HOST_API_KEY:
+        required: false
+      COCOAPODS_SESSION_PASSWORD:
+        required: false
+      COCOAPODS_SESSION_EMAIL:
+        required: false
+
+jobs:
+  find-konfig-yamls:
+    runs-on: ubuntu-latest
+    concurrency: ${{ github.workflow }}-${{ github.ref }}
+    outputs:
+      konfig_yaml_dirs: ${{ steps.find-konfig-yamls.outputs.konfig_yaml_dirs }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Find konfig.yaml files
+        id: find-konfig-yamls
+        uses: ./.github/actions/private/find-konfig-yamls
+
+  bump:
+    needs: find-konfig-yamls
+    strategy:
+      matrix:
+        konfig_yaml_dir: ${{ fromJson(needs.find-konfig-yamls.outputs.konfig_yaml_dirs) }}
+    uses: ./.github/workflows/bump.yaml
+    with:
+      konfig_yaml_dir: ${{ matrix.konfig_yaml_dir }}
+    secrets: inherit
+
+  publish:
+    needs: find-konfig-yamls
+    strategy:
+      matrix:
+        konfig_yaml_dir: ${{ fromJson(needs.find-konfig-yamls.outputs.konfig_yaml_dirs) }}
+    uses: ./.github/workflows/publish.yaml
+    with:
+      konfig_yaml_dir: ${{ matrix.konfig_yaml_dir }}
+    secrets: inherit

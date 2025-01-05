@@ -1,0 +1,22 @@
+name: "Install CLI"
+description: "Installs the Konfig CLI globally, the repository must have access to https://github.com/passiv/konfig-snaptrade/pkgs/npm/konfig-cli"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        registry-url: "https://npm.pkg.github.com"
+      env:
+        NODE_AUTH_TOKEN: ${{ github.token }}
+
+    - name: Install CLI
+      shell: bash
+      run: npm install -g @passiv/konfig-cli
+
+    - name: Output CLI Path
+      id: cli-path
+      shell: bash
+      run: echo "cli-path=$(npm root -g)/konfig-snaptrade" >> $GITHUB_ENV
