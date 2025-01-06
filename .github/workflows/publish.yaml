@@ -60,6 +60,9 @@ jobs:
         if: >
           steps.detect-changesets.outputs.has_changesets == 'false' &&
           steps.sdk-submodules.outputs.dirs != ''
+        env:
+          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
+          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         uses: passiv/konfig-workflows/.github/actions/private/merge-submodule-prs@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}

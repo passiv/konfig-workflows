@@ -76,6 +76,8 @@ jobs:
         if: steps.sdk-submodules.outputs.dirs != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
+          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
         uses: passiv/konfig-workflows/.github/actions/private/push-submodules-to-pr@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
@@ -156,6 +158,9 @@ jobs:
 
       - name: Merge submodule PRs
         if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
+        env:
+          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
+          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         uses: passiv/konfig-workflows/.github/actions/private/merge-submodule-prs@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
