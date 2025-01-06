@@ -27,6 +27,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
+          registry-url: "https://npm.pkg.github.com"
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -35,7 +38,7 @@ jobs:
           run_install: false
 
       - name: Install konfig
-        uses: passiv/konfig-workflows/.github/actions/install-cli@main
+        run: npm install -g @passiv/konfig-cli
 
       - name: Fix OAS
         run: konfig fix --ci
