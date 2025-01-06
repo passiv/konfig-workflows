@@ -39,7 +39,7 @@ jobs:
 
       - name: Find konfig.yaml files
         id: find-konfig-yamls
-        uses: ./.github/actions/private/find-konfig-yamls
+        uses: .github/actions/private/find-konfig-yamls
 
   check-if-oas-modified:
     runs-on: ubuntu-latest
