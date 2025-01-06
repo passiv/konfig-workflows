@@ -39,7 +39,7 @@ jobs:
 
       - name: Find konfig.yaml files
         id: find-konfig-yamls
-        uses: .github/actions/private/find-konfig-yamls
+        uses: passiv/konfig-workflows/.github/actions/private/find-konfig-yamls@main
 
   check-if-oas-modified:
     runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
   regenerate-sdks:
     needs: check-if-oas-modified
     if: needs.check-if-oas-modified.outputs.directory != ''
-    uses: ./.github/workflows/regenerate.yaml
+    uses: passiv/konfig-workflows/.github/workflows/regenerate.yaml@main
     with:
       konfig_yaml_dir: ${{ needs.check-if-oas-modified.outputs.directory }}
     secrets: inherit

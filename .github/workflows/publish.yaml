@@ -24,18 +24,18 @@ jobs:
 
       - name: Detect changeset files
         id: detect-changesets
-        uses: ./.github/actions/private/detect-changesets
+        uses: passiv/konfig-workflows/.github/actions/private/detect-changesets@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
       - name: Install konfig
         if: steps.detect-changesets.outputs.has_changesets == 'false'
-        uses: ./.github/actions/install-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Detect SDK submodules
         if: steps.detect-changesets.outputs.has_changesets == 'false'
         id: sdk-submodules
-        uses: ./.github/actions/private/detect-sdk-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/detect-sdk-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
@@ -44,7 +44,7 @@ jobs:
         if: >
           steps.detect-changesets.outputs.has_changesets == 'false' &&
           steps.sdk-submodules.outputs.dirs != ''
-        uses: ./.github/actions/private/get-branch-name
+        uses: passiv/konfig-workflows/.github/actions/private/get-branch-name@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
@@ -60,7 +60,7 @@ jobs:
         if: >
           steps.detect-changesets.outputs.has_changesets == 'false' &&
           steps.sdk-submodules.outputs.dirs != ''
-        uses: ./.github/actions/private/merge-submodule-prs
+        uses: passiv/konfig-workflows/.github/actions/private/merge-submodule-prs@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
@@ -71,7 +71,7 @@ jobs:
         if: >
           steps.detect-changesets.outputs.has_changesets == 'false' &&
           steps.sdk-submodules.outputs.dirs != ''
-        uses: ./.github/actions/private/sync-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/sync-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
@@ -103,10 +103,10 @@ jobs:
           submodules: true
 
       - name: Install konfig
-        uses: ./.github/actions/install-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Setup test env vars
-        uses: ./.github/actions/private/inject-testing-env-vars
+        uses: passiv/konfig-workflows/.github/actions/private/inject-testing-env-vars@main
         with:
           TEST_ENV: ${{ secrets.TEST_ENV }}
 
@@ -152,7 +152,7 @@ jobs:
           gpg-connect-agent reloadagent /bye
 
       - name: Write settings.xml file for Java publishing
-        uses: ./.github/actions/private/write-settings-xml
+        uses: passiv/konfig-workflows/.github/actions/private/write-settings-xml@main
         with:
           gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
           ossrh_username: ${{ secrets.OSSRH_USERNAME }}

@@ -65,14 +65,14 @@ jobs:
 
       - name: Find konfig.yaml files
         id: find-konfig-yamls
-        uses: ./.github/actions/private/find-konfig-yamls
+        uses: passiv/konfig-workflows/.github/actions/private/find-konfig-yamls@main
 
   bump:
     needs: find-konfig-yamls
     strategy:
       matrix:
         konfig_yaml_dir: ${{ fromJson(needs.find-konfig-yamls.outputs.konfig_yaml_dirs) }}
-    uses: ./.github/workflows/bump.yaml
+    uses: passiv/konfig-workflows/.github/workflows/bump.yaml@main
     with:
       konfig_yaml_dir: ${{ matrix.konfig_yaml_dir }}
     secrets: inherit
@@ -82,7 +82,7 @@ jobs:
     strategy:
       matrix:
         konfig_yaml_dir: ${{ fromJson(needs.find-konfig-yamls.outputs.konfig_yaml_dirs) }}
-    uses: ./.github/workflows/publish.yaml
+    uses: passiv/konfig-workflows/.github/workflows/publish.yaml@main
     with:
       konfig_yaml_dir: ${{ matrix.konfig_yaml_dir }}
     secrets: inherit

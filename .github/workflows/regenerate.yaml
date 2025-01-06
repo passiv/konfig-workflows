@@ -35,7 +35,7 @@ jobs:
           run_install: false
 
       - name: Install konfig
-        uses: ./.github/actions/install-cliinstall-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cliinstall-cli@main
 
       - name: Fix OAS
         run: konfig fix --ci
@@ -68,7 +68,7 @@ jobs:
 
       - name: Detect SDK submodules
         id: sdk-submodules
-        uses: ./.github/actions/private/detect-sdk-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/detect-sdk-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
@@ -76,7 +76,7 @@ jobs:
         if: steps.sdk-submodules.outputs.dirs != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: ./.github/actions/private/push-submodules-to-pr
+        uses: passiv/konfig-workflows/.github/actions/private/push-submodules-to-pr@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
@@ -116,10 +116,10 @@ jobs:
           submodules: true
 
       - name: Install konfig
-        uses: ./.github/actions/install-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Setup test env vars
-        uses: ./.github/actions/private/inject-testing-env-vars
+        uses: passiv/konfig-workflows/.github/actions/private/inject-testing-env-vars@main
         with:
           TEST_ENV: ${{ secrets.TEST_ENV }}
 
@@ -147,7 +147,7 @@ jobs:
           submodules: true
 
       - name: Install konfig
-        uses: ./.github/actions/install-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Set git config
         run: |
@@ -156,7 +156,7 @@ jobs:
 
       - name: Merge submodule PRs
         if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
-        uses: ./.github/actions/private/merge-submodule-prs
+        uses: passiv/konfig-workflows/.github/actions/private/merge-submodule-prs@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}
@@ -165,7 +165,7 @@ jobs:
 
       - name: Update submodule references
         if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
-        uses: ./.github/actions/private/sync-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/sync-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}

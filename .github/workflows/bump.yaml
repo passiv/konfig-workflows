@@ -20,18 +20,18 @@ jobs:
 
       - name: Detect changeset files
         id: detect-changesets
-        uses: ./.github/actions/private/detect-changeset
+        uses: passiv/konfig-workflows/.github/actions/private/detect-changeset@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
       - name: Install konfig
         if: steps.detect-changesets.outputs.has_changesets == 'true'
-        uses: ./.github/actions/install-cli
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Detect SDK submodules
         if: steps.detect-changesets.outputs.has_changesets == 'true'
         id: sdk-submodules
-        uses: ./.github/actions/private/detect-sdk-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/detect-sdk-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
@@ -45,7 +45,7 @@ jobs:
         if: >
           steps.detect-changesets.outputs.has_changesets == 'true' &&
           steps.sdk-submodules.outputs.dirs != ''
-        uses: ./.github/actions/private/sync-submodules
+        uses: passiv/konfig-workflows/.github/actions/private/sync-submodules@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
@@ -53,7 +53,7 @@ jobs:
       - name: Get version bump branch name
         id: branch-name
         if: steps.detect-changesets.outputs.has_changesets == 'true'
-        uses: ./.github/actions/private/get-branch-name
+        uses: passiv/konfig-workflows/.github/actions/private/get-branch-name@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
@@ -73,7 +73,7 @@ jobs:
           steps.sdk-submodules.outputs.dirs != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: ./.github/actions/private/push-submodules-to-pr
+        uses: passiv/konfig-workflows/.github/actions/private/push-submodules-to-pr@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
