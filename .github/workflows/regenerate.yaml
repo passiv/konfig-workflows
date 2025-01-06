@@ -35,7 +35,7 @@ jobs:
           run_install: false
 
       - name: Install konfig
-        uses: passiv/konfig-workflows/.github/actions/install-cliinstall-cli@main
+        uses: passiv/konfig-workflows/.github/actions/install-cli@main
 
       - name: Fix OAS
         run: konfig fix --ci
