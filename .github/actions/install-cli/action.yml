@@ -1,13 +1,17 @@
 name: "Install CLI"
 description: "Installs the Konfig CLI globally, the repository must have access to https://github.com/passiv/konfig-snaptrade/pkgs/npm/konfig-cli"
-
+inputs:
+  node_version:
+    description: "The version of Node.js to use"
+    required: false
+    default: "18"
 runs:
   using: "composite"
   steps:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: "18"
+        node-version: ${{ inputs.node_version }}
         registry-url: "https://npm.pkg.github.com"
       env:
         NODE_AUTH_TOKEN: ${{ github.token }}
