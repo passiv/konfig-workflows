@@ -3,6 +3,8 @@ name: Release
 on:
   workflow_call:
     secrets:
+      KONFIG_API_KEY:
+        required: false
       TEST_ENV:
         required: false
       SUBMODULE_DEPLOY_KEY_TYPESCRIPT:

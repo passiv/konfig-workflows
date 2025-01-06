@@ -3,6 +3,8 @@ name: Regenerate SDKs on OAS change
 on:
   workflow_call:
     secrets:
+      KONFIG_API_KEY:
+        required: false
       TEST_ENV:
         required: true
       SUBMODULE_DEPLOY_KEY_TYPESCRIPT:
