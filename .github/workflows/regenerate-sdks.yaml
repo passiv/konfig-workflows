@@ -122,7 +122,7 @@ jobs:
           submodules: true
 
       - name: Install konfig
-        uses: passiv/konfig-workflows/.github/actions/install-cli@main
+        run: npm install -g @passiv/konfig-cli
 
       - name: Setup test env vars
         uses: passiv/konfig-workflows/.github/actions/private/inject-testing-env-vars@main
@@ -153,7 +153,7 @@ jobs:
           submodules: true
 
       - name: Install konfig
-        uses: passiv/konfig-workflows/.github/actions/install-cli@main
+        run: npm install -g @passiv/konfig-cli
 
       - name: Set git config
         run: |
