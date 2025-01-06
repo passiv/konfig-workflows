@@ -25,6 +25,10 @@ on:
         required: false
       SUBMODULE_DEPLOY_KEY_SWIFT:
         required: false
+      KONFIG_GITHUB_APP_ID:
+        required: true
+      KONFIG_GITHUB_APP_PRIVATE_KEY:
+        required: true
 
 jobs:
   find-konfig-yamls:
@@ -94,7 +98,7 @@ jobs:
   regenerate-sdks:
     needs: check-if-oas-modified
     if: needs.check-if-oas-modified.outputs.directory != ''
-    uses: passiv/konfig-workflows/.github/workflows/regenerate.yaml@main
+    uses: passiv/konfig-workflows/.github/workflows/regenerate-sdks.yaml@main
     with:
       konfig_yaml_dir: ${{ needs.check-if-oas-modified.outputs.directory }}
     secrets: inherit
