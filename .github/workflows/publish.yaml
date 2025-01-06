@@ -166,11 +166,10 @@ jobs:
           printf "machine trunk.cocoapods.org\n login ${{ secrets.COCOAPODS_SESSION_EMAIL }}\n password ${{ secrets.COCOAPODS_SESSION_PASSWORD }}" > ~/.netrc
           chmod 600 ~/.netrc
 
-      # AG: temporarely disable publishing SDKs until we know the workflow is stable
-      # - name: Publish SDKs
-      #   uses: nick-fields/retry@v2
-      #   with:
-      #     timeout_minutes: 15
-      #     max_attempts: 3
-      #     retry_on: error
-      #     command: cd ${{ inputs.konfig_yaml_dir }} && konfig publish --all --skipTests --tolerateRepublish --skipRemoteCheck --ci
+      - name: Publish SDKs
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_on: error
+          command: cd ${{ inputs.konfig_yaml_dir }} && konfig publish --all --skipTests --tolerateRepublish --skipRemoteCheck --ci
