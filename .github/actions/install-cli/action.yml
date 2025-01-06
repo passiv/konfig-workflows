@@ -10,13 +10,8 @@ runs:
         node-version: 16.x
         registry-url: "https://npm.pkg.github.com"
       env:
-        NODE_AUTH_TOKEN: ${{ github.token }}
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install CLI
       shell: bash
       run: npm install -g @passiv/konfig-cli
-
-    - name: Output CLI Path
-      id: cli-path
-      shell: bash
-      run: echo "cli-path=$(npm root -g)/konfig-snaptrade" >> $GITHUB_ENV
