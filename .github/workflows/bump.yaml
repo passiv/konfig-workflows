@@ -20,7 +20,7 @@ jobs:
 
       - name: Detect changeset files
         id: detect-changesets
-        uses: passiv/konfig-workflows/.github/actions/private/detect-changeset@main
+        uses: passiv/konfig-workflows/.github/actions/private/detect-changesets@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
 
