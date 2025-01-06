@@ -172,4 +172,4 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           retry_on: error
-          command: cd ${{ inputs.konfig_yaml_dir }} && konfig publish --generator python --skipTests --tolerateRepublish --skipRemoteCheck --ci
+          command: cd ${{ inputs.konfig_yaml_dir }} && konfig publish --all --skipTests --tolerateRepublish --skipRemoteCheck --ci
