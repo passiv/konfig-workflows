@@ -8,6 +8,33 @@ on:
         type: string
         required: true
         default: "."
+    secrets:
+      KONFIG_API_KEY:
+        required: false
+      TEST_ENV:
+        required: true
+      SUBMODULE_DEPLOY_KEY_TYPESCRIPT:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PYTHON:
+        required: false
+      SUBMODULE_DEPLOY_KEY_JAVA:
+        required: false
+      SUBMODULE_DEPLOY_KEY_CSHARP:
+        required: false
+      SUBMODULE_DEPLOY_KEY_GO:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PHP:
+        required: false
+      SUBMODULE_DEPLOY_KEY_PHP7:
+        required: false
+      SUBMODULE_DEPLOY_KEY_RUBY:
+        required: false
+      SUBMODULE_DEPLOY_KEY_SWIFT:
+        required: false
+      KONFIG_GITHUB_APP_ID:
+        required: true
+      KONFIG_GITHUB_APP_PRIVATE_KEY:
+        required: true
 
 jobs:
   # Fixes and lints OAS. If linter passes, regenerates SDKs, creates changeset, and pushes
