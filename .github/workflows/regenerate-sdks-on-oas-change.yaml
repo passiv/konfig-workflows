@@ -83,11 +83,11 @@ jobs:
           fi
           echo "oas=${{ matrix.konfig_yaml_dir }}/$oas" >> $GITHUB_OUTPUT
 
-      - name: Check if OAS was modified
-        id: check-oas-modified
-        uses: tj-actions/changed-files@v37.6.1
-        with:
-          files: ${{ steps.final-oas-path.outputs.oas }}
+      # - name: Check if OAS was modified
+      #   id: check-oas-modified
+      #   uses: tj-actions/changed-files@v37.6.1
+      #   with:
+      #     files: ${{ steps.final-oas-path.outputs.oas }}
 
       # If OAS was modified, set job output to this konfig.yaml's directory
       - name: Set output if OAS was modified
