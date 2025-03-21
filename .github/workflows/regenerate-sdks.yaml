@@ -135,6 +135,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: regenerate-sdks
+    strategy:
+      matrix:
+        # TODO: get languages from konfig.yaml
+        language: [typescript, python, go, ruby, php, php7, csharp, java]
     container:
       image: konfigdev/test-and-publish:latest
 
@@ -159,7 +163,7 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           retry_on: error
-          command: cd ${{ inputs.konfig_yaml_dir }} && konfig test
+          command: cd ${{ inputs.konfig_yaml_dir }} && konfig test --filter ${{ matrix.language }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
