@@ -191,6 +191,7 @@ jobs:
       - name: Merge submodule PRs
         if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
         env:
+          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
           KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
           KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         uses: passiv/konfig-workflows/.github/actions/private/merge-submodule-prs@main
@@ -210,6 +211,7 @@ jobs:
 
       - name: Merge top-level PR
         env:
+          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
           KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
           KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         run: |
