@@ -85,8 +85,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
-          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
-          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         uses: passiv/konfig-workflows/.github/actions/private/push-submodules-to-pr@main
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
@@ -115,8 +113,6 @@ jobs:
         working-directory: ${{ inputs.konfig_yaml_dir }}
         env:
           KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
-          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
-          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         run: |
           git add -A
           git commit -m "Version Bump SDKs"
@@ -145,8 +141,6 @@ jobs:
           steps.check-merge-disabled.outputs.result != 'true'
         env:
           KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
-          KONFIG_GITHUB_APP_ID: ${{ secrets.KONFIG_GITHUB_APP_ID }}
-          KONFIG_GITHUB_APP_PRIVATE_KEY: ${{ secrets.KONFIG_GITHUB_APP_PRIVATE_KEY }}
         run: |
           repo=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
           konfig pr-merge \

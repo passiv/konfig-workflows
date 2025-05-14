@@ -51,10 +51,6 @@ on:
         required: false
       COCOAPODS_SESSION_EMAIL:
         required: false
-      KONFIG_GITHUB_APP_ID:
-        required: true
-      KONFIG_GITHUB_APP_PRIVATE_KEY:
-        required: true
 
 jobs:
   find-konfig-yamls:
