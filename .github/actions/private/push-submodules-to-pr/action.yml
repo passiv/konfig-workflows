@@ -39,8 +39,6 @@ runs:
     - name: Commit and push (submodules)
       shell: bash
       working-directory: ${{ inputs.konfig_yaml_dir }}
-      env:
-          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
       run: |
         git submodule foreach '
           if [ -n "$(echo "${{ inputs.sdk_submodule_dirs }}" | grep "$displaypath ")" ]; then
