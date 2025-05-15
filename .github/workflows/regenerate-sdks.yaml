@@ -79,6 +79,8 @@ jobs:
       - name: Regenerate SDKs
         run: konfig generate
         working-directory: ${{ inputs.konfig_yaml_dir }}
+        env:
+          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
 
       - name: Create changeset file
         run: konfig changeset -a -m "Regenerate SDKs"

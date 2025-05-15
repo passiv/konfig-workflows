@@ -77,6 +77,8 @@ jobs:
         if: steps.detect-changesets.outputs.has_changesets == 'true'
         run: konfig generate
         working-directory: ${{ inputs.konfig_yaml_dir }}
+        env:
+          KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
 
       - name: Push SDK submodules to PR
         if: >
