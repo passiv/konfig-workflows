@@ -37,9 +37,9 @@ on:
         required: false
       GPG_KEY_ID:
         required: false
-      OSSRH_USERNAME:
+      CENTRAL_TOKEN_USERNAME:
         required: false
-      OSSRH_PASSWORD:
+      CENTRAL_TOKEN_PASSWORD:
         required: false
       NUGET_API_KEY:
         required: false
