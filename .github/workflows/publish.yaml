@@ -162,8 +162,8 @@ jobs:
         uses: passiv/konfig-workflows/.github/actions/private/write-settings-xml@main
         with:
           gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          ossrh_username: ${{ secrets.OSSRH_USERNAME }}
-          ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+          central_token_username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          central_token_password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
 
       - name: Write .netrc file for Swift publishing
         if: matrix.language == 'swift'
