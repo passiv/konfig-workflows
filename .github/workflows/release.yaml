@@ -52,6 +52,10 @@ on:
       COCOAPODS_SESSION_EMAIL:
         required: false
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   find-konfig-yamls:
     runs-on: ubuntu-latest
