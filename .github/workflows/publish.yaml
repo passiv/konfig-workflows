@@ -9,6 +9,10 @@ on:
         required: true
         default: "."
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   # Updates submodule SHAs if necessary and prepares for publishing
   pre-publish:
