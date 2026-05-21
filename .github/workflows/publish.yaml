@@ -18,7 +18,7 @@ jobs:
       sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
           submodules: ${{ matrix.language == 'php' || matrix.language == 'php7' }}
@@ -116,8 +116,13 @@ jobs:
         with:
           TEST_ENV: ${{ secrets.TEST_ENV }}
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
       - name: Run tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           max_attempts: 3
@@ -172,7 +177,7 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Publish SDKs
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           max_attempts: 3
