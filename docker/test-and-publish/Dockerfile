@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:20-bullseye
 
 RUN npm install -g pnpm 
 RUN apt-get update && apt-get install --no-install-recommends -y software-properties-common ca-certificates lsb-release apt-transport-https
