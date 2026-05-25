@@ -117,7 +117,7 @@ jobs:
           TEST_ENV: ${{ secrets.TEST_ENV }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
 
@@ -139,7 +139,7 @@ jobs:
       # If any SDKs are in submodules, then publishing might require pushing tags to the submodule repos
       - name: Set up SSH key for submodule access
         if: needs.pre-publish.outputs.sdk_submodule_dirs != '' && (matrix.language == 'php' || matrix.language == 'php7')
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: |
             ${{ secrets.SUBMODULE_DEPLOY_KEY_PYTHON }}

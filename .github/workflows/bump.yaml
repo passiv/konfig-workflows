@@ -63,11 +63,11 @@ jobs:
         working-directory: ${{ inputs.konfig_yaml_dir }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
           version: 8

@@ -32,7 +32,7 @@ runs:
   using: "composite"
   steps:
     - name: Set up SSH key for submodule access
-      uses: webfactory/ssh-agent@v0.8.0
+      uses: webfactory/ssh-agent@v0.10.0
       with:
         ssh-private-key: ${{ inputs.submodule_deploy_keys }}
 
