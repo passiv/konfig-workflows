@@ -140,7 +140,7 @@ jobs:
           node-version: "24"
 
       - name: Run tests
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 15
           max_attempts: 3
@@ -195,7 +195,7 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Publish SDKs
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 15
           max_attempts: 3
