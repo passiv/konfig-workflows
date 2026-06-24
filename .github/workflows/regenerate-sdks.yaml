@@ -8,6 +8,11 @@ on:
         type: string
         required: true
         default: "."
+      changeset_type:
+        description: "Semver bump to use for generated SDK changesets (patch, minor, or major)"
+        type: string
+        required: false
+        default: "patch"
     secrets:
       KONFIG_API_KEY:
         required: true
@@ -83,7 +88,18 @@ jobs:
           KONFIG_API_KEY: ${{ secrets.KONFIG_API_KEY }}
 
       - name: Create changeset file
-        run: konfig changeset -a -m "Regenerate SDKs"
+        env:
+          CHANGESET_TYPE: ${{ inputs.changeset_type }}
+        run: |
+          case "$CHANGESET_TYPE" in
+            patch|minor|major) ;;
+            *)
+              echo "Invalid changeset_type '$CHANGESET_TYPE'. Expected one of: patch, minor, major." >&2
+              exit 1
+              ;;
+          esac
+
+          konfig changeset -a -m "Regenerate SDKs" --"$CHANGESET_TYPE"
         working-directory: ${{ inputs.konfig_yaml_dir }}
 
       - name: Set git config

@@ -28,7 +28,7 @@ This workflow will be called by a workflow in the customer's repository every ti
 
 ### [regenerate-sdks](https://github.com/konfig-dev/automation/blob/main/.github/workflows/regenerate-sdks.yaml)
 
-First, fixes the OpenAPI spec, then lints it (unless linting is disabled by config). Next, regenerates SDKs and creates a changeset file. Then, pushes these changes to the PR. If there are any SDK submodules, first those will be pushed to a PR created in the corresponding submodule repository.
+First, fixes the OpenAPI spec, then lints it (unless linting is disabled by config). Next, regenerates SDKs and creates a changeset file. By default, generated SDK changesets use a `patch` semver bump; reusable workflow callers can pass `changeset_type` with `patch`, `minor`, or `major` to choose a different bump level for manual regeneration flows. Then, pushes these changes to the PR. If there are any SDK submodules, first those will be pushed to a PR created in the corresponding submodule repository.
 
 Next, the regenerated SDKs are tested in a docker container. If they pass, then the PRs are merged. First, any submodule PRs are merged, and the submodule references are updated and pushed to the main PR, if applicable; then, the main repo's PR is merged.
 
