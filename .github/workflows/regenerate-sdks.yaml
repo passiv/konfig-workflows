@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: "patch"
+      changeset_message:
+        description: "Message to use for generated SDK changesets"
+        type: string
+        required: false
+        default: "Regenerate SDKs"
     secrets:
       KONFIG_API_KEY:
         required: true
@@ -90,6 +95,7 @@ jobs:
       - name: Create changeset file
         env:
           CHANGESET_TYPE: ${{ inputs.changeset_type }}
+          CHANGESET_MESSAGE: ${{ inputs.changeset_message }}
         run: |
           case "$CHANGESET_TYPE" in
             patch|minor|major) ;;
@@ -99,7 +105,7 @@ jobs:
               ;;
           esac
 
-          konfig changeset -a -m "Regenerate SDKs" --"$CHANGESET_TYPE"
+          konfig changeset -a -m "$CHANGESET_MESSAGE" --"$CHANGESET_TYPE"
         working-directory: ${{ inputs.konfig_yaml_dir }}
 
       - name: Set git config
