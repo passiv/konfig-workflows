@@ -96,16 +96,7 @@ jobs:
         env:
           CHANGESET_TYPE: ${{ inputs.changeset_type }}
           CHANGESET_MESSAGE: ${{ inputs.changeset_message }}
-        run: |
-          case "$CHANGESET_TYPE" in
-            patch|minor|major) ;;
-            *)
-              echo "Invalid changeset_type '$CHANGESET_TYPE'. Expected one of: patch, minor, major." >&2
-              exit 1
-              ;;
-          esac
-
-          konfig changeset -a -m "$CHANGESET_MESSAGE" --"$CHANGESET_TYPE"
+        run: konfig changeset -a -m "$CHANGESET_MESSAGE" --level="$CHANGESET_TYPE"
         working-directory: ${{ inputs.konfig_yaml_dir }}
 
       - name: Set git config
