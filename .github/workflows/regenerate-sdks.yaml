@@ -96,7 +96,7 @@ jobs:
         env:
           CHANGESET_TYPE: ${{ inputs.changeset_type }}
           CHANGESET_MESSAGE: ${{ inputs.changeset_message }}
-        run: konfig changeset -a -m "$CHANGESET_MESSAGE" --level="$CHANGESET_TYPE"
+        run: konfig changeset -a -m "$CHANGESET_MESSAGE" --type="$CHANGESET_TYPE"
         working-directory: ${{ inputs.konfig_yaml_dir }}
 
       - name: Set git config
