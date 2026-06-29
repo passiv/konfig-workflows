@@ -18,6 +18,24 @@ on:
         type: string
         required: false
         default: "Regenerate SDKs"
+      base_branch:
+        description: "Required base branch in the caller repository to check out and use as the caller-created PR merge target."
+        type: string
+        required: true
+      head_branch:
+        description: "Required existing or new caller repository branch where generated SDK changes are committed and pushed; the caller is responsible for creating any top-level PR."
+        type: string
+        required: true
+      pull_request_title:
+        description: "Title to use for SDK submodule pull requests created by this workflow."
+        type: string
+        required: false
+        default: "Regenerate SDKs"
+      pull_request_body:
+        description: "Body to use for SDK submodule pull requests created by this workflow."
+        type: string
+        required: false
+        default: ""
     secrets:
       KONFIG_API_KEY:
         required: true
@@ -48,12 +66,19 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       sdk_submodule_dirs: ${{ steps.sdk-submodules.outputs.dirs }}
+      head_branch: ${{ steps.branches.outputs.head_branch }}
 
     steps:
+      - name: Resolve caller repository branches
+        id: branches
+        env:
+          INPUT_HEAD_BRANCH: ${{ inputs.head_branch }}
+        run: echo "head_branch=$INPUT_HEAD_BRANCH" >> "$GITHUB_OUTPUT"
+
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ inputs.base_branch }}
           submodules: true
 
       - name: Set up Node.js
@@ -104,6 +129,9 @@ jobs:
           git config --global user.email "passiv-ops@passiv.com"
           git config --global user.name "Passiv Ops"
 
+      - name: Create generated changes branch
+        run: git checkout -B "${{ steps.branches.outputs.head_branch }}"
+
       - name: Detect SDK submodules
         id: sdk-submodules
         uses: passiv/konfig-workflows/.github/actions/private/detect-sdk-submodules@main
@@ -129,16 +157,17 @@ jobs:
             ${{ secrets.SUBMODULE_DEPLOY_KEY_PHP7 }}
             ${{ secrets.SUBMODULE_DEPLOY_KEY_RUBY }}
             ${{ secrets.SUBMODULE_DEPLOY_KEY_SWIFT }}
-          head: ${{ github.head_ref }}
+          head: ${{ steps.branches.outputs.head_branch }}
           commit_msg: "Regenerate SDKs"
-          pr_title: "Regenerate SDKs"
-          pr_body: "Automatically created by top-level SDK repo PR: ${{ github.event.pull_request.html_url }}"
+          pr_title: ${{ inputs.pull_request_title }}
+          pr_body: "${{ inputs.pull_request_body != '' && inputs.pull_request_body || format('Automatically created by top-level SDK repo PR: {0}', github.event.pull_request.html_url) }}"
 
-      - name: Commit and push (top-level repo)
+      - name: Commit and push generated changes to head branch
         run: |
           git add -A
           git commit -m "Regenerate SDKs"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ steps.branches.outputs.head_branch }}
+
 
   # Runs konfig test in docker container
   test:
@@ -155,7 +184,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ needs.regenerate-sdks.outputs.head_branch }}
           submodules: true
 
       - name: Install konfig
@@ -191,7 +220,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ needs.regenerate-sdks.outputs.head_branch }}
           submodules: true
 
       - name: Install konfig
@@ -210,8 +239,8 @@ jobs:
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}
-          head: ${{ github.head_ref }}
-          base: ${{ github.base_ref }}
+          head: ${{ needs.regenerate-sdks.outputs.head_branch }}
+          base: ${{ inputs.base_branch }}
 
       - name: Update submodule references
         if: needs.regenerate-sdks.outputs.sdk_submodule_dirs != ''
@@ -219,7 +248,7 @@ jobs:
         with:
           konfig_yaml_dir: ${{ inputs.konfig_yaml_dir }}
           sdk_submodule_dirs: ${{ needs.regenerate-sdks.outputs.sdk_submodule_dirs }}
-          push_to: ${{ github.head_ref }}
+          push_to: ${{ needs.regenerate-sdks.outputs.head_branch }}
 
       - name: Merge top-level PR
         env:
@@ -227,7 +256,7 @@ jobs:
         run: |
           repo=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
           konfig pr-merge \
-            --head ${{ github.head_ref }} \
-            --base ${{ github.base_ref }} \
+            --head ${{ needs.regenerate-sdks.outputs.head_branch }} \
+            --base ${{ inputs.base_branch }} \
             --owner ${{ github.repository_owner }} \
             --repo $repo
