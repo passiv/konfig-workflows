@@ -130,7 +130,15 @@ jobs:
           git config --global user.name "Passiv Ops"
 
       - name: Create generated changes branch
-        run: git checkout -B "${{ steps.branches.outputs.head_branch }}"
+        env:
+          HEAD_BRANCH: ${{ steps.branches.outputs.head_branch }}
+        run: |
+          if git ls-remote --exit-code --heads origin "$HEAD_BRANCH" >/dev/null; then
+            git fetch origin "$HEAD_BRANCH"
+            git checkout -B "$HEAD_BRANCH" "FETCH_HEAD"
+          else
+            git checkout -B "$HEAD_BRANCH"
+          fi
 
       - name: Detect SDK submodules
         id: sdk-submodules
